@@ -11,10 +11,9 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <td>voto</td>
-            <td>casilla</td>
-            <td>Candidatos y Votos</td>
-            <td>evidencia</td>
+            <td>ID</td>
+            <td>Eleccion</td>
+            <td>Candidatos</td>
             <td colspan="2">ACTION</td>
         </tr>
     </thead>
@@ -22,7 +21,8 @@
         @foreach($votos as $voto)
         <tr>
             <td>{{$voto->id}}</td>
-            <td>{{$voto->casilla->ubicacion}}</td>
+            <td>{{$voto->eleccion->periodo}}</td>
+            
             <td>
                 <table>
                 @foreach($voto->candidatos as $candidato)

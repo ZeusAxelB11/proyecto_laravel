@@ -19,7 +19,7 @@
             <td>ID</td>
             <td>PERIODO</td>
             <td>FECHA</td>
-            <td>FECHAA DE APERTURA</td>
+            <td>FECHA DE APERTURA</td>
             <td>HORA DE APERTURA</td>
             <td>FECHA DE CIERRE</td>
             <td>HORA DE CIERRE</td>

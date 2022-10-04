@@ -120,7 +120,13 @@ class VotoController extends Controller
      */
     public function edit($id)
     {
-        //
+         $voto= Voto::find($id);
+        if ($voto){
+            return view ('voto/edit',compact('voto'));
+        } else {
+            $message= "No se localizó voto $id";
+            return view('message',$message);
+        }
     }
 
     /**
