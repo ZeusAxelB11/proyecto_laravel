@@ -30,7 +30,7 @@
                     <form action="{{route('casilla.destroy', $casilla->id)}}" method="POST">
                         @csrf 
                         @method('DELETE')
-                        <button class="btn btn-danger" type="submit" onclick="return confirm('ESta seguro de borrar {{$casilla->ubicacion}}')">Del</button>
+                        <button class="btn btn-danger" type="submit" onclick="return confirm('ESta seguro de borrar {{$casilla->ubicacion}}')">Delete</button>
                     </form>
                 </td>
             </tr>

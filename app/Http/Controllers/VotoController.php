@@ -1,20 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 use App\Models\Candidato;
 use App\Models\Casilla;
 use App\Models\Eleccion;
 use App\Models\Voto;
 use App\Models\Votocandidato;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class VotoController extends Controller
 {
     private $DUPLICATE_KEY_CODE=23000;
-    private $DUPLICATE_KEY_MESSAGE="Ya existe un dato igual en la BD, ". 
+    private $DUPLICATE_KEY_MESSAGE="Ya existe un dato igual en la BD, ".
             "no se permiten duplicados";
 
     /**
@@ -26,21 +26,22 @@ class VotoController extends Controller
     {
         $votos = Voto::all();
         return view('voto/list', compact('votos'));
+
     }
 
     /**
      * Show the form for creating a new resource.
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
         $casillas = Casilla::all();
-        $candidatos = candidato::all();
-        $elecciones = eleccion::all();
-        return view('voto/create',compact('casillas','candidatos','elecciones'));
+        $elecciones = Eleccion::all();
+        $candidatos = Candidato::all();
+        return view ("voto.create", compact (["casillas","elecciones","candidatos"]));
     }
-    /** Metodo de validacion para los votos*/
+
     private function validateVote($request){
         foreach($request->all() as $key=>$value){
             if (substr($key,0,10)=="candidato_")
@@ -51,6 +52,55 @@ class VotoController extends Controller
         return true;
     }
 
+    private function getEvidence(Request $request){
+        $evidenceFileName="";
+        if ($request->hasFile('evidencia')) {
+            $evidenceFileName = $request->file('evidencia')->getClientOriginalName();
+            $request->file('evidencia')->move(public_path('pdf'), $evidenceFileName);
+        }
+        return $evidenceFileName;
+    }
+
+    private function getDataVote(Request $request){
+        $dataVote= [
+            "eleccion_id"=>$request->eleccion_id,
+            "casilla_id"=>$request->casilla_id,
+            "evidencia"=> $this->getEvidence($request)
+        ];
+        return $dataVote;
+    }
+
+    private function getCandidates(Request $request){
+        $candidates = [];
+        foreach($request->all() as $key=>$value){
+            if (substr($key,0,10)=="candidato_")
+                $candidates[substr($key,10)]=$value;
+        }
+        return $candidates;
+    }
+
+    private function saveVoteCandidates($candidates, $vote_id){
+        foreach($candidates as $key=>$value){
+            $voteCandidate=[];
+            $voteCandidate['voto_id']= $vote_id;
+            $voteCandidate['candidato_id'] = $key;
+            $voteCandidate['votos']=$value;
+            Votocandidato::create($voteCandidate);
+        }
+    }
+    private function updateVoteCandidates($candidates, $vote_id){
+        foreach($candidates as $key=>$value){
+            $voteCandidate=[];
+            $voteCandidate['voto_id']= $vote_id;
+            $voteCandidate['candidato_id'] = $key;
+            $voteCandidate['votos']=$value;
+            Votocandidato::where('voto_id',$vote_id)->
+                    where('candidato_id',$key)->update($voteCandidate);
+
+        }
+    }
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -59,37 +109,19 @@ class VotoController extends Controller
      */
     public function store(Request $request)
     {
-        if (!($this->validateVote($request))){
-            return "Lo votos no pueden ser negativos";
-        }
-        $candidatos=[];
-        foreach($request->all() as $key=>$value){
-            if (substr($key,0,10)=="candidato_")
-                $candidatos[substr($key,10)]=$value;
-        }
-        $data['eleccion_id']=$request->eleccion_id;
-            $data['casilla_id']=$request->casilla_id;
-            $evidenceFileName ="";
-            if ($request->hasFile('evidencia')) {
-                $evidenceFileName = $request->file('evidencia')->getClientOriginalName();
-            }
-            if ($request->hasFile('evidencia')) $request->file('evidencia')->move(public_path('pdf'), $evidenceFileName);
-            $data['evidencia']=$evidenceFileName;         
-            $message="save successfull";
-            $success=true;
+
+        if ($this->validateVote($request)){
+            $dataVote= $this->getDataVote($request);
+            $candidates =  $this->getCandidates($request);
+            $success= true;
+            $message="save successful...";
             DB::beginTransaction();
             try {
-                //--- save to voto
-                $voto =Voto::create($data);  
-                //--- save to votocandidato
-                foreach($candidatos as $key=>$value){
-                    $votocandidato=[];
-                    $votocandidato['voto_id']= $voto->id;
-                    $votocandidato['candidato_id'] = $key;
-                    $votocandidato['votos']=$value;
-                    Votocandidato::create($votocandidato);
-                }
-                DB::commit();               
+
+                $vote =Voto::create($dataVote);
+                $this->saveVoteCandidates($candidates, $vote->id);
+                DB::commit();
+
             } catch (\Exception $e) {
                 $success=false;
                 DB::rollback();
@@ -97,8 +129,16 @@ class VotoController extends Controller
                     $message=$this->DUPLICATE_KEY_MESSAGE;
                 else
                     $message=$e->getMessage();
-            }    
-        return view('message',compact('message','success'));
+            }
+            return view('message',compact('message','success'));
+
+        } else {
+            $message="Votos no válidos";
+            $success=false;
+            return view('message',compact('message','success'));
+        }
+
+
     }
 
     /**
@@ -120,12 +160,13 @@ class VotoController extends Controller
      */
     public function edit($id)
     {
-         $voto= Voto::find($id);
+        $voto= Voto::find($id);
         if ($voto){
-            return view ('voto/edit',compact('voto'));
+            return view('voto.edit',compact('voto'));
         } else {
-            $message= "No se localizó voto $id";
-            return view('message',$message);
+            $message="Busqueda no coincide";
+            $success=false;
+            return view('message',compact('message','success'));
         }
     }
 
@@ -138,7 +179,31 @@ class VotoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        if ($this->validateVote($request)){
+            $dataVote= $this->getDataVote($request);
+            $candidates =  $this->getCandidates($request);
+            $success= true;
+            $message="save successful...";
+            DB::beginTransaction();
+            try {
+
+                $vote = Voto::whereId($id)->update($dataVote);
+                $this->updateVoteCandidates($candidates,$id);
+                DB::commit();
+
+            } catch (\Exception $e) {
+                $success=false;
+                DB::rollback();
+                $message=$e->getMessage();
+            }
+            return view('message',compact('message','success'));
+
+        } else {
+            $message="Votos no válidos";
+            $success=false;
+            return view('message',compact('message','success'));
+        }
     }
 
     /**
@@ -152,3 +217,4 @@ class VotoController extends Controller
         //
     }
 }
+

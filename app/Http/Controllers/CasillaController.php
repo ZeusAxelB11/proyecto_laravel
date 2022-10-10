@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\Casilla;
+
 class CasillaController extends Controller
 {
     /**
@@ -23,7 +25,8 @@ class CasillaController extends Controller
     {
         return view('casilla/create');
     }
-    private function validateData(request $request)
+
+        private function validateData(request $request)
     {
         $request->validate([
             'ubicacion' => 'required|max:100',
@@ -38,6 +41,7 @@ class CasillaController extends Controller
     public function store(Request $request)
     {
         $this->validateData($request);
+
         $data['ubicacion'] = $request->ubicacion;
         $casilla = casilla::create($data);
         return redirect('casilla')->with(
@@ -54,7 +58,7 @@ class CasillaController extends Controller
      */
     public function show($id)
     {
-        //
+        echo "Element $id";
     }
     /**
      * Show the form for editing the specified resource.
@@ -102,4 +106,4 @@ class CasillaController extends Controller
             'El elemento fué borrado ...'
         );
     }
-} //--- end class
+}

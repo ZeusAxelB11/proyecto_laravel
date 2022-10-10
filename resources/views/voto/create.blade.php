@@ -1,13 +1,9 @@
 @extends('plantilla')
 @section('content')
-<style>
-    .uper {
-        margin-top: 40px;
-    }
-</style>
+
 <div class="card uper">
     <div class="card-header">
-        votos
+        Agregar Votos
     </div>
     <div class="card-body">
         @if ($errors->any())
@@ -19,52 +15,46 @@
             </ul>
         </div><br />
         @endif
-        <form method="post" action="{{ route('voto.store') }} " 
-        enctype="multipart/form-data">
-        
-            @csrf 
+        <form method="post" action="{{ route('voto.store') }} "
+            enctype="multipart/form-data">
+            @csrf
             <div class="form-group">
-                <label for="eleccion">Eleción:</label>
-                <select name="eleccion_id" id="eleccion">
-                @foreach ($elecciones as $eleccion)
-                    <option value="{{$eleccion->id}}">{{$eleccion->periodo}}</option>
-                @endforeach
+                <label for="eleccion_id">Elección:</label>
+                <select name="eleccion_id" id="eleccion_id" >
+                    @foreach ($elecciones as $eleccion)
+                        <option value="{{$eleccion->id}}">{{$eleccion->periodo}}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="form-group">
-                <label for="casilla">Casilla:</label>
-                <select name="casilla_id" id="casilla">
-                @foreach ($casillas as $casilla)
-                    <option value="{{$casilla->id}}">{{$casilla->ubicacion}}</option>
-                @endforeach
+                <label for="casilla_id">Casilla:</label>
+                <select name="casilla_id" id="casilla_id" >
+                    @foreach ($casillas as $casilla)
+                        <option value="{{$casilla->id}}">{{$casilla->ubicacion}}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="form-group">
                 <table class="table">
                     <thead>
-                        <tr>
-                            <th>Candidato</th>
-                            <th>votos</th>
-                        </tr>
+                        <th>Candidato</th>
+                        <th>Votos</th>
                     </thead>
                     <tbody>
                         @foreach ($candidatos as $candidato)
                             <tr>
                                 <td>{{$candidato->nombrecompleto}}</td>
-                                <td>
-                                    <input type="number" name="candidato_{{$candidato->id}}" >
+                                <td><input type="number" id=""
+                                    name="candidato_{{$candidato->id}}" >
                                 </td>
-                            </tr>                    
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-
-
             <div class="form-group">
                 <label for="evidencia">Evidencia:</label>
-                <input type="file" id="evidencia" accept="application/pdf"
-                 class="form-control" name="evidencia" />
+                <input type="file" id="evidencia" name="evidencia" >
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>

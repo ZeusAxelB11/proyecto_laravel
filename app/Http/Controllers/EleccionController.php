@@ -100,6 +100,19 @@ use App\Models\Eleccion;
     public function update(Request $request, $id)
     {
         //
+        $this->validateData($request);
+        $data=[
+            'periodo'       => $request->periodo,
+		    'fecha'         => $request->fecha,
+		    'fechaapertura' => $request->fechaapertura,
+		    'horaapertura'  => $request->horaapertura,
+		    'fechacierre'   => $request->fechacierre,
+		    'horacierre'    => $request->horacierre,
+		    'observaciones' => $request->observaciones,
+        ];
+            Eleccion::whereId($id)->update($data);
+            return redirect('eleccion')
+            ->with('success', 'actualizado');
     }
 
     /**
