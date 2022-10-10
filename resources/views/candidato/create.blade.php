@@ -23,7 +23,6 @@
             action="{{ route('candidato.store') }} " 
             enctype="multipart/form-data"
             onsubmit="return validateData();">
-            <!-- comment -->
             {{ csrf_field() }}
             <div class="form-group">
                 <label for="nombrecompleto">Nombre completo:</label>

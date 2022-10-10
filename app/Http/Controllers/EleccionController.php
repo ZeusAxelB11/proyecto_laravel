@@ -7,31 +7,27 @@ use App\Models\Eleccion;
 
  class EleccionController extends Controller
 {
-    /**
+    /** ===========================================================================================
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        // echo "index";
+    public function index() {
         $elecciones = Eleccion::all();
         return view('eleccion/list', compact('elecciones'));
     }
 
-    /**
+    /** ===========================================================================================
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+    public function create() {
         return view ('eleccion/create');
     }
 
-    function validateData(Request $request)
-    {
+    // ============================================================================================
+    public function validateData(Request $request) {
         $request->validate([
             'periodo' => 'required',
             'fecha'=>'required',
@@ -42,15 +38,14 @@ use App\Models\Eleccion;
             'observaciones'=>'required',
         ]);
     }
-    /**
+
+    /** ===========================================================================================
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request) {
         $this->validateData($request);
         $data=[
             'periodo'       => $request->periodo,
@@ -62,43 +57,38 @@ use App\Models\Eleccion;
 		    'observaciones' => $request->observaciones,
         ];
         $eleccion = Eleccion::create($data);
-        return redirect('eleccion')
-        ->with('success', $eleccion->periodo.' insertado correctamente');
+        return redirect('eleccion')->with('success', $eleccion->periodo.' insertado correctamente');
     }
 
-    /**
+    /** ===========================================================================================
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
+    public function show($id) {
+        // Empty
     }
 
-    /**
+    /** ===========================================================================================
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
+    public function edit($id) {
         $eleccion = Eleccion::find($id);
         return view('eleccion/edit', compact('eleccion'));
     }
 
-    /**
+    /** ===========================================================================================
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
         //
         $this->validateData($request);
         $data=[
@@ -111,22 +101,18 @@ use App\Models\Eleccion;
 		    'observaciones' => $request->observaciones,
         ];
             Eleccion::whereId($id)->update($data);
-            return redirect('eleccion')
-            ->with('success', 'actualizado');
+            return redirect('eleccion')->with('success', 'actualizado');
     }
 
-    /**
+    /** ===========================================================================================
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
         //
         Eleccion::whereId($id)->delete();
-        return redirect('eleccion')
-        ->with('success', 'eliminado');
-        
+        return redirect('eleccion')->with('success', 'eliminado');
     }
 }

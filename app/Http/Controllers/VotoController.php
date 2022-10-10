@@ -14,35 +14,34 @@ use Illuminate\Support\Facades\DB;
 class VotoController extends Controller
 {
     private $DUPLICATE_KEY_CODE=23000;
-    private $DUPLICATE_KEY_MESSAGE="Ya existe un dato igual en la BD, ".
+    private $DUPLICATE_KEY_MESSAGE="Dato duplicado en la BD, ".
             "no se permiten duplicados";
 
-    /**
+    /** ===========================================================================================
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         $votos = Voto::all();
         return view('voto/list', compact('votos'));
 
     }
 
-    /**
+    /** ===========================================================================================
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         $casillas = Casilla::all();
         $elecciones = Eleccion::all();
         $candidatos = Candidato::all();
         return view ("voto.create", compact (["casillas","elecciones","candidatos"]));
     }
 
-    private function validateVote($request){
+    // ============================================================================================
+    private function validateVote($request) {
         foreach($request->all() as $key=>$value){
             if (substr($key,0,10)=="candidato_")
                 if ($value<0){
@@ -52,7 +51,8 @@ class VotoController extends Controller
         return true;
     }
 
-    private function getEvidence(Request $request){
+    // ============================================================================================
+    private function getEvidence(Request $request) {
         $evidenceFileName="";
         if ($request->hasFile('evidencia')) {
             $evidenceFileName = $request->file('evidencia')->getClientOriginalName();
@@ -61,7 +61,8 @@ class VotoController extends Controller
         return $evidenceFileName;
     }
 
-    private function getDataVote(Request $request){
+    // ============================================================================================
+    private function getDataVote(Request $request) {
         $dataVote= [
             "eleccion_id"=>$request->eleccion_id,
             "casilla_id"=>$request->casilla_id,
@@ -70,7 +71,8 @@ class VotoController extends Controller
         return $dataVote;
     }
 
-    private function getCandidates(Request $request){
+    // ============================================================================================
+    private function getCandidates(Request $request) {
         $candidates = [];
         foreach($request->all() as $key=>$value){
             if (substr($key,0,10)=="candidato_")
@@ -79,7 +81,8 @@ class VotoController extends Controller
         return $candidates;
     }
 
-    private function saveVoteCandidates($candidates, $vote_id){
+    // ============================================================================================
+    private function saveVoteCandidates($candidates, $vote_id) {
         foreach($candidates as $key=>$value){
             $voteCandidate=[];
             $voteCandidate['voto_id']= $vote_id;
@@ -88,7 +91,9 @@ class VotoController extends Controller
             Votocandidato::create($voteCandidate);
         }
     }
-    private function updateVoteCandidates($candidates, $vote_id){
+
+    // ============================================================================================
+    private function updateVoteCandidates($candidates, $vote_id) {
         foreach($candidates as $key=>$value){
             $voteCandidate=[];
             $voteCandidate['voto_id']= $vote_id;
@@ -100,17 +105,15 @@ class VotoController extends Controller
         }
     }
 
-
-    /**
+    /** ===========================================================================================
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
 
-        if ($this->validateVote($request)){
+        if ($this->validateVote($request)) {
             $dataVote= $this->getDataVote($request);
             $candidates =  $this->getCandidates($request);
             $success= true;
@@ -141,27 +144,25 @@ class VotoController extends Controller
 
     }
 
-    /**
+    /** ===========================================================================================
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
+    public function show($id) {
+        //Empty
     }
 
-    /**
+    /** ===========================================================================================
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
+    public function edit($id) {
         $voto= Voto::find($id);
-        if ($voto){
+        if ($voto) { 
             return view('voto.edit',compact('voto'));
         } else {
             $message="Busqueda no coincide";
@@ -170,15 +171,14 @@ class VotoController extends Controller
         }
     }
 
-    /**
+    /** ===========================================================================================
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
 
         if ($this->validateVote($request)){
             $dataVote= $this->getDataVote($request);
@@ -206,15 +206,27 @@ class VotoController extends Controller
         }
     }
 
-    /**
+    /** ===========================================================================================
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    public function destroy($id) {
+        DB::beginTransaction();
+        $success=true;
+        try {
+            Votocandidato::where('voto_id', '=', $id)->delete();
+            Voto::whereId($id)->delete();
+            DB::commit();
+            $message="Operacion exitosa";
+
+        } catch (\Exception $ex){
+            DB::rollBack();
+            $message = $ex->getMessage();
+            $success=false;
+        }     
+        return view ('message',compact('message','success'));
     }
 }
 
