@@ -20,7 +20,7 @@ return [
             '4f7bcec1a5d30ccebf26b007bda9707a'),
         'redirect' => 
             env('FACEBOOK_REDIRECT',
-            http://localhost:8000/login/facebook/callback')
+           'http://localhost:8888/login/facebook/callback')
     ],
 
 

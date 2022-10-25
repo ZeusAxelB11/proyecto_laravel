@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Socialite;
+use  Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
     public function index()
     {
-        return view('auth/login');
+
+        return view('Auth/login');
     }
     /**
      * Redirecciona al usuario a la página de Facebook para autenticarse
