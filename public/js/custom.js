@@ -32,3 +32,11 @@ function validateData(){
     }
     return isValid;
 }
+function previewPDF (event, idFrame){
+    if(event.target.files.length >0){
+      let src = URL.createObjectURL(event.target.files[0]);
+      let pdfPreview = document.getElementById(idFrame);
+      pdfPreview.src = src;
+      pdfPreview.style.display = "block";
+    }
+  }
