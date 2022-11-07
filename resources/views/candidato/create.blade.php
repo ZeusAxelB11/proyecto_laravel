@@ -24,10 +24,16 @@
             enctype="multipart/form-data" 
             onsubmit="return validateType('perfil', 'aplication/pdf');">
             {{ csrf_field() }}
+
             <div class="form-group">
                 <label for="nombrecompleto">Nombre:</label>
-                <input type="text" class="form-control" id="nombrecompleto" name="nombrecompleto" />
+                <input 
+                type="text" 
+                class="form-control" 
+                id="nombrecompleto" 
+                name="nombrecompleto" />
             </div>
+
             <div class="form-group">
                 <label for="sexo">Sexo:</label>
                 <select name="sexo" id="sexo">
@@ -35,19 +41,31 @@
                     <option value="H">Hombre</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="foto">Foto:</label>
-                <input type="file" id="foto" name="foto" accept="image/png, image/jpeg" 
-                onchange="preview(event,'previewImage');" />
+                <input type="file" id="foto" name="foto" accept="image/png, image/jpeg"
+                class="form-control" onchange="preview(event,'previewImage');" />
                 <div id="previewImage"></div>
             </div>
+            
+            <div class="form-group">
+                <label for="curp">curp:</label>
+                <input type="text" 
+                    id="curp" 
+                    name="curp" 
+                    onfocusout="validate(this)"
+                >
+            </div>  
+        
             <div class="form-group">
                 <label for="perfil">Perfil:</label>
                 <input type="file" id="perfil" name="perfil" accept="application/pdf"
-                onchange="preview(event,'previewPDF');" />
+                class="form-control" onchange="preview(event,'previewPDF');" />
                 <div id="previewPDF"></div>
                 <br><br>
 			<div id="visorArchivo">
+
 				<!--Aqui se desplegará el fichero-->
             </div>            
             <button type="submit" class="btn btn-primary">Guardar</button>

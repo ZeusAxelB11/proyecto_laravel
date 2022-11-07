@@ -37,6 +37,9 @@
             @endforeach
         </tbody>
     </table>
+    <input type="button" class="btn btn-info" value ="Hazme click" onclick="showMessage('Test for function showMessage using jQuery');"> 
+    </input>
 </div>
-<div><a href="http://localhost:8888/casilla/pdf" class="btn btn-dark bg-dark">PDF VIEW</a></div>
-@endsection
+
+<!--<div><a href="http://localhost:8888/casilla/pdf" class="btn btn-dark bg-dark">PDF VIEW</a></div>
+@endsection-->
