@@ -28,7 +28,7 @@
                 <td><a href="{{route('casilla.edit', $casilla->id)}}" class="btn btn-primary">Edit</a></td>
                 <td>
                     <form action="{{route('casilla.destroy', $casilla->id)}}" method="POST">
-                        @csrf 
+                        @csrf
                         @method('DELETE')
                         <button class="btn btn-danger" type="submit" onclick="return confirm('ESta seguro de borrar {{$casilla->ubicacion}}')">Delete</button>
                     </form>
@@ -37,9 +37,9 @@
             @endforeach
         </tbody>
     </table>
-    <input type="button" class="btn btn-info" value ="Hazme click" onclick="showMessage('Test for function showMessage using jQuery');"> 
+    <input type="button" class="btn btn-info" value ="Hazme click" onclick="showMessage('Test for function showMessage using jQuery');">
     </input>
 </div>
-
-<!--<div><a href="http://localhost:8888/casilla/pdf" class="btn btn-dark bg-dark">PDF VIEW</a></div>
-@endsection-->
+<br>
+<div><a href="http://localhost:8888/casilla/pdf" class="btn btn-dark bg-dark">PDF VIEW</a></div>
+@endsection
